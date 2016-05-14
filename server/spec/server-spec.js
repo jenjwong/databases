@@ -35,10 +35,11 @@ describe('Persistent Node Chat Server', function() {
       method: 'POST',
       uri: 'http://127.0.0.1:3000/classes/users',
       json: { username: 'Valjean' }
-    }, function (error, response, body) {
+    }, function () {
       // Post a message to the node chat server:
-      if (error) { console.log('there is an error', error); }
-      console.log('pass');
+      console.log('initial post request');
+      dbConnection.query('SELECT * FROM users', function(err, results){
+      console.log('results of initial post is:', results);
       request({
         method: 'POST',
         uri: 'http://127.0.0.1:3000/classes/messages',
@@ -50,7 +51,6 @@ describe('Persistent Node Chat Server', function() {
       }, function () {
         // Now if we look in the database, we should find the
         // posted message there.
-
         // TODO: You might have to change this test to get all the data from
         // your message table, since this is schema-dependent.
         var queryString = 'SELECT * FROM messages';
@@ -58,13 +58,15 @@ describe('Persistent Node Chat Server', function() {
 
         dbConnection.query(queryString, queryArgs, function(err, results) {
           // Should have one result:
+          console.log(results);
           expect(results.length).to.equal(1);
-
           // TODO: If you don't have a column named text, change this test.
+          // console.log(results);
           expect(results[0].text).to.equal('In mercy\'s name, three days is all I need.');
 
           done();
         });
+      });
       });
     });
   });
@@ -82,10 +84,10 @@ describe('Persistent Node Chat Server', function() {
       // Now query the Node chat server and see if it returns
       // the message we just inserted:
       request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
-        console.log('response is:', JSON.parse(response.body));
-        console.log('body is:', body);
+        //console.log('response is:', JSON.parse(response.body));
+        //console.log('body is:', body);
         var messageLog = JSON.parse(body);
-        console.log(messageLog[0]);
+        //console.log(messageLog[0]);
         expect(messageLog[0].text).to.equal('Men like you can never change!');
         expect(messageLog[0].roomname).to.equal('main');
         done();

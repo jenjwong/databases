@@ -8,10 +8,7 @@ router.post('/messages', controller.messages.post);
 
 router.get('/users', controller.users.get);
 
-router.post('/users', function() {
-  console.log('hello');
-  controller.users.post;
-});
+router.post('/users', controller.users.post);
 
 
 module.exports = router;
