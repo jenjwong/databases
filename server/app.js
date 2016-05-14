@@ -18,6 +18,8 @@ app.set('port', 3000);
 app.use(morgan('dev'));
 app.use(parser.json());
 
+//TODO: Set headers
+
 // Set up our routes
 app.use('/classes', router);
 
