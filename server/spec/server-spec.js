@@ -10,9 +10,11 @@ describe('Persistent Node Chat Server', function() {
 
   beforeEach(function(done) {
     dbConnection = mysql.createConnection({
+      host: '127.0.0.1',
       user: 'root',
       password: 'q',
-      database: 'chat'
+      database: 'chat',
+      port: '3306',
     });
     dbConnection.connect();
 
@@ -33,8 +35,10 @@ describe('Persistent Node Chat Server', function() {
       method: 'POST',
       uri: 'http://127.0.0.1:3000/classes/users',
       json: { username: 'Valjean' }
-    }, function () {
+    }, function (error, response, body) {
       // Post a message to the node chat server:
+      if (error) { console.log('there is an error', error); }
+      console.log('pass');
       request({
         method: 'POST',
         uri: 'http://127.0.0.1:3000/classes/messages',
@@ -67,7 +71,7 @@ describe('Persistent Node Chat Server', function() {
 
   it('Should output all messages from the DB', function(done) {
     // Let's insert a message into the db
-    var queryString = "INSERT INTO messages (createdAt, text, roomname) VALUES (0000-00-00', 'Men like us can never change!', 'main')";
+    var queryString = "INSERT INTO `messages` (`text`, `roomname`, `userId`) VALUES ('Men like you can never change!', 'main', 1)";
     var queryArgs = [];
     // TODO - The exact query string and query args to use
     // here depend on the schema you design, so I'll leave
@@ -78,8 +82,10 @@ describe('Persistent Node Chat Server', function() {
       // Now query the Node chat server and see if it returns
       // the message we just inserted:
       request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+        console.log('response is:', JSON.parse(response.body));
+        console.log('body is:', body);
         var messageLog = JSON.parse(body);
-        console.log(messageLog);
+        console.log(messageLog[0]);
         expect(messageLog[0].text).to.equal('Men like you can never change!');
         expect(messageLog[0].roomname).to.equal('main');
         done();

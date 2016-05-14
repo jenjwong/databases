@@ -1,9 +1,10 @@
 var db = require('../db/index.js');
+db.connection.connect();
 
 module.exports = {
   messages: {
     get: function (callback) {
-      db.connection.connect();
+      // db.connection.connect();
       db.connection.query('SELECT * from messages', function(err, rows, fields) {
         if (err) { console.log('error from the database', err); }
         console.log('res is:', rows);
@@ -15,36 +16,41 @@ module.exports = {
 
       //select all from messages
       //db.connection.end();
-      db.connection.end();
+     
 
     }, // a function which produces all the messages
     post: function (msgObj, callback) {
-      db.connection.connect();
-
-      db.hello();
-      var query = "INSERT INTO messages (text, roomname) VALUES (" + 'jenjwong' + "," + 'other jenjwong' + ")";
+      var query = "INSERT INTO `messages` (`text`, `roomname`) VALUES ('" + msgObj.text + "','" + msgObj.username + "')";
       db.connection.query(query, function(err, rows, fields) {
         if (err) { console.log('error from the database', err); }
         console.log('res is:', rows);
         callback(rows);
       });
-      db.connection.end();
     } // a function which can be used to insert a message into the database
   },
 
   users: {
     // Ditto as above.
-    get: function (callback) {
-      // db.query('SELECT * FROM `users`', function (error, results, fields) {
-      //   if (error) {
-      //     console.log('!!!!!!!!!! this is our test', error);
-      //   } else {
-      //     console.log('!!!!!!!!!!!!! this is our test', results);
-      //   }
-      // });
+    get: function (msgObj, callback) {
+      var query = "SELECT * FROM users";
+      db.connection.query(query, function(err, rows, fields) {
+        if (err) { console.log('error from database', err); }
+        callback(rows);
+      });
 
+      // db.connection.end();
     },
-    post: function () {
+    post: function (msgObj, callback) {
+      console.log('hello');
+      var query = "INSERT INTO `users` (`username`) VALUES ('" + msgObj.username + "')";
+         // var query = "INSERT INTO `users` (`username`) VALUES ('jenjwong')";
+      db.connection.query(query, function(err, rows, fields) {
+        if (err) { console.log('error from database', err); }
+        console.log(rows);
+        callback(rows);
+      });
+
+      // db.connection.end();
 
     }
   }
